@@ -8,20 +8,49 @@ SpecMaker = require '../lib/spec-maker'
 
 describe "SpecMaker", ->
 
+  editorView = null
+  editor = null
+
+  triggerOpenEvent = ->
+    editorView.trigger 'spec-maker:open-or-create-spec'
+
+  stripProjectPath = (path) ->
+    path.replace(atom.project.getPath(), '')
+
+  currentEditorPath = ->
+    stripProjectPath editor.getPath()
+
+  openFileAndSetEditors = (file = 'lib/sample.js') ->
+    atom.workspaceView.openSync(file)
+    editorView = atom.workspaceView.getActiveView()
+    {editor} = editorView
+
   beforeEach ->
+    atom.workspaceView = new WorkspaceView
+    atom.workspaceView.attachToDom()
     waitsForPromise ->
       atom.packages.activatePackage('spec-maker')
+    runs ->
+      openFileAndSetEditors()
 
-  describe 'creating new specs', ->
+  describe 'creating and opening new specs', ->
 
-    it 'creates a new spec for the current file', ->
+    it 'creates/opens a new spec for the current file', ->
+      triggerOpenEvent()
+      expect(currentEditorPath()).toEqual('spec/sample-spec.js')
 
     it 'uses user settings to name the spec file', ->
+      atom.config.set('spec-maker.specSuffix', '.specification')
+      triggerOpenEvent()
+      expect(currentEditorPath()).toEqual('spec/sample.specification.js')
 
     it 'uses user settings to place the spec file', ->
+      atom.config.set('spec-maker.specLocation', 'tests')
+      triggerOpenEvent()
+      expect(currentEditorPath()).toEqual('tests/sample-spec.js')
 
-  describe 'opening existing specs', ->
-
-    it 'opens the spec for the current file', ->
-
-    it 'uses user settings to open the spec file', ->
+    it 'uses user settings to place the spec file from source files', ->
+      openFileAndSetEditors('source/js/some-path/sample.js')
+      atom.config.set('spec-maker.srcLocation', 'source/js')
+      triggerOpenEvent()
+      expect(currentEditorPath()).toEqual('spec/some-path/sample-spec.js')
