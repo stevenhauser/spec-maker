@@ -1,6 +1,59 @@
+config = (prop) ->
+  atom.config.get("spec-maker.#{prop}")
+
+removeLeadingSlashes = (path) ->
+  path.replace(/^\/+/, '')
+
+removeTrailingSlashes = (path) ->
+  path.replace(/\/+$/, '')
+
+ensureTrailingSlashes = (path) ->
+  removeTrailingSlashes(path) + '/'
+
+getCurrentPath = ->
+  atom.workspaceView.getActiveView()?.editor?.getPath() or ''
+
+getRelPath = (path) ->
+  path.replace(atom.project.getPath(), '')
+
+warnOfUnreplacement = ->
+  console.warn [
+    "Spec Maker: no replacement made between"
+    "`srcLocation` (#{config('srcLocation')}) and"
+    "`specLocation` (#{config('specLocation')})."
+    "Are you sure your config is correct?"
+  ].join(" ")
+
+replaceSrcLocWithSpecLoc = (path) ->
+  origPath = path
+  newPath = path.replace(
+    ensureTrailingSlashes(config('srcLocation')),
+    ensureTrailingSlashes(config('specLocation'))
+  )
+  warnOfUnreplacement() if newPath is origPath
+  newPath
+
+addSuffix = (path) ->
+  path.replace('.', config('specSuffix') + '.')
+
+deduceSpecPath = ->
+  [
+    getCurrentPath
+    getRelPath
+    replaceSrcLocWithSpecLoc
+    removeLeadingSlashes
+    addSuffix
+  ].reduce ((path, fn) -> fn(path)), ''
+
+createSpec = ->
+  path = deduceSpecPath()
+  # console.log path
+  atom.workspaceView.open path
+
 module.exports =
 
   activate: (state) ->
+    atom.workspaceView.command 'spec-maker:open-or-create-spec', createSpec
 
   deactivate: ->
 

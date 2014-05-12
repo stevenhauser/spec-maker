@@ -18,7 +18,7 @@ describe "SpecMaker", ->
     path.replace(atom.project.getPath(), '')
 
   currentEditorPath = ->
-    stripProjectPath editor.getPath()
+    stripProjectPath atom.workspaceView.getActiveView().editor.getPath()
 
   openFileAndSetEditors = (file = 'lib/sample.js') ->
     atom.workspaceView.openSync(file)
@@ -26,8 +26,10 @@ describe "SpecMaker", ->
     {editor} = editorView
 
   beforeEach ->
-    atom.workspaceView = new WorkspaceView
-    atom.workspaceView.attachToDom()
+    wsv = atom.workspaceView = new WorkspaceView
+    wsv.attachToDom()
+    # Use `openSync` to facilitate specs w/o promises and `runs`
+    spyOn(wsv, 'open').andCallFake(wsv.openSync.bind(wsv))
     waitsForPromise ->
       atom.packages.activatePackage('spec-maker')
     runs ->
@@ -37,20 +39,20 @@ describe "SpecMaker", ->
 
     it 'creates/opens a new spec for the current file', ->
       triggerOpenEvent()
-      expect(currentEditorPath()).toEqual('spec/sample-spec.js')
+      expect(currentEditorPath()).toEqual('/spec/sample-spec.js')
 
     it 'uses user settings to name the spec file', ->
       atom.config.set('spec-maker.specSuffix', '.specification')
       triggerOpenEvent()
-      expect(currentEditorPath()).toEqual('spec/sample.specification.js')
+      expect(currentEditorPath()).toEqual('/spec/sample.specification.js')
 
     it 'uses user settings to place the spec file', ->
       atom.config.set('spec-maker.specLocation', 'tests')
       triggerOpenEvent()
-      expect(currentEditorPath()).toEqual('tests/sample-spec.js')
+      expect(currentEditorPath()).toEqual('/tests/sample-spec.js')
 
     it 'uses user settings to place the spec file from source files', ->
       openFileAndSetEditors('source/js/some-path/sample.js')
       atom.config.set('spec-maker.srcLocation', 'source/js')
       triggerOpenEvent()
-      expect(currentEditorPath()).toEqual('spec/some-path/sample-spec.js')
+      expect(currentEditorPath()).toEqual('/spec/some-path/sample-spec.js')
