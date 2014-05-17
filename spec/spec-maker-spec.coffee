@@ -56,3 +56,24 @@ describe "SpecMaker", ->
       atom.config.set('spec-maker.srcLocation', 'source/js')
       triggerOpenEvent()
       expect(currentEditorPath()).toEqual('/spec/some-path/sample-spec.js')
+
+    describe 'using user settings to open in panes', ->
+
+      beforeEach ->
+        openFileAndSetEditors('lib/some-path/sample.js')
+
+      it 'opens in a specified pane', ->
+        atom.config.set('spec-maker.houseOfPane', 'left')
+        triggerOpenEvent()
+        expect(atom.workspaceView.open).toHaveBeenCalledWith(
+          'spec/some-path/sample-spec.js',
+          { split: 'left' }
+        )
+
+      it 'opens in no pane', ->
+        atom.config.set('spec-maker.houseOfPane', 'none')
+        triggerOpenEvent()
+        expect(atom.workspaceView.open).toHaveBeenCalledWith(
+          'spec/some-path/sample-spec.js',
+          undefined
+        )
