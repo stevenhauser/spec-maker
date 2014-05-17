@@ -48,7 +48,8 @@ deduceSpecPath = ->
 createSpec = ->
   path = deduceSpecPath()
   # console.log path
-  atom.workspaceView.open path
+  opts = { split: config('houseOfPane') } unless config('houseOfPane') is 'none'
+  atom.workspaceView.open path, opts
 
 module.exports =
 
@@ -69,3 +70,9 @@ module.exports =
     # Where the source code lives
     # ie `lib/my-app-file.js` or `src/my-app-file.js`
     srcLocation: 'lib/'
+    # Which pane a spec is opened into.
+    # ie `left`, `right`, or `none`
+    # Currently Atom only seems to support left/right but not above/below,
+    # at least in the `open` API, so that will suffice for now.
+    # Also radio buttons don't seem to be supported yet so this is a string.
+    houseOfPane: 'right'
