@@ -25,16 +25,30 @@ warnOfUnreplacement = ->
   ].join(" ")
 
 replaceSrcLocWithSpecLoc = (path) ->
+  srcLocation = config('srcLocation')
+  specLocation = config('specLocation')
+
+  if new RegExp(specLocation).test(path)
+    fromPath = specLocation
+    toPath = srcLocation
+  else
+    fromPath = srcLocation
+    toPath = specLocation
+
   origPath = path
   newPath = path.replace(
-    ensureTrailingSlashes(config('srcLocation')),
-    ensureTrailingSlashes(config('specLocation'))
+    ensureTrailingSlashes(fromPath),
+    ensureTrailingSlashes(toPath)
   )
   warnOfUnreplacement() if newPath is origPath
   newPath
 
 addSuffix = (path) ->
-  path.replace('.', config('specSuffix') + '.')
+  specSuffix = config('specSuffix')
+  if new RegExp(specSuffix).test(path)
+    path.replace(specSuffix, '')
+  else
+    path.replace('.', specSuffix + '.')
 
 deduceSpecPath = ->
   [
