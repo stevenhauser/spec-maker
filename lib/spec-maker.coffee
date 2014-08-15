@@ -25,15 +25,10 @@ warnOfUnreplacement = ->
   ].join(" ")
 
 replaceSrcLocWithSpecLoc = (path) ->
-  srcLocation = config('srcLocation')
-  specLocation = config('specLocation')
-
-  if new RegExp(specLocation).test(path)
-    fromPath = specLocation
-    toPath = srcLocation
-  else
-    fromPath = srcLocation
-    toPath = specLocation
+  fromPath   = config('srcLocation')
+  toPath     = config('specLocation')
+  isPathSpec = new RegExp(toPath).test(path)
+  [fromPath, toPath] = [toPath, fromPath] if isPathSpec
 
   origPath = path
   newPath = path.replace(

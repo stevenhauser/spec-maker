@@ -79,6 +79,7 @@ describe "SpecMaker", ->
         )
 
     describe 'returning from a spec to the source file', ->
+
       beforeEach ->
         openFileAndSetEditors('spec/some-path/sample-spec.js')
 
