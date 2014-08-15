@@ -77,3 +77,16 @@ describe "SpecMaker", ->
           'spec/some-path/sample-spec.js',
           undefined
         )
+
+    describe 'returning from a spec to the source file', ->
+
+      beforeEach ->
+        openFileAndSetEditors('spec/some-path/sample-spec.js')
+
+      it 'returns to the source file for the spec', ->
+        atom.config.set('spec-maker.houseOfPane', 'none')
+        triggerOpenEvent()
+        expect(atom.workspaceView.open).toHaveBeenCalledWith(
+          'lib/some-path/sample.js',
+          undefined
+        )
