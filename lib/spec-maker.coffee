@@ -11,10 +11,10 @@ ensureTrailingSlashes = (path) ->
   removeTrailingSlashes(path) + '/'
 
 getCurrentPath = ->
-  atom.workspaceView.getActiveView()?.editor?.getPath() or ''
+  atom.workspace.getActiveTextEditor()?.getPath() or ''
 
 getRelPath = (path) ->
-  path.replace(atom.project.getPath(), '')
+  path.replace(atom.project.getPaths()[0], '')
 
 warnOfUnreplacement = ->
   console.warn [
@@ -58,12 +58,14 @@ createSpec = ->
   path = deduceSpecPath()
   # console.log path
   opts = { split: config('houseOfPane') } unless config('houseOfPane') is 'none'
-  atom.workspaceView.open path, opts
+  atom.workspace.open path, opts
 
 module.exports =
 
   activate: (state) ->
-    atom.workspaceView.command 'spec-maker:open-or-create-spec', createSpec
+    atom.commands.add 'atom-text-editor',
+      'spec-maker:open-or-create-spec': (event) ->
+        createSpec()
 
   deactivate: ->
 
