@@ -3,7 +3,7 @@
   "main": "./lib/spec-maker",
   "version": "0.3.0",
   "description": "Easily open and create specs for files.",
-  "activationEvents": [],
+  "activationCommands": {},
   "repository": "https://github.com/stevenhauser/spec-maker",
   "license": "MIT",
   "engines": {
