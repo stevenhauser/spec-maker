@@ -71,19 +71,27 @@ module.exports =
 
   serialize: ->
 
-  configDefaults:
+  config:
     # What to append to the source file name to turn it into a spec file.
     # ie `my-app-file.js` -> `my-app-file-spec.js`
-    specSuffix: '-spec'
+    specSuffix:
+      type: 'string'
+      default: '-spec'
     # Where the specs live
     # ie `lib/views/my-app-view.js` -> `spec/views/my-app-view-spec.js`
-    specLocation: 'spec/'
+    specLocation:
+      type: 'string'
+      default: 'spec/'
     # Where the source code lives
     # ie `lib/my-app-file.js` or `src/my-app-file.js`
-    srcLocation: 'lib/'
+    srcLocation:
+      type: 'string'
+      default: 'lib/'
     # Which pane a spec is opened into.
     # ie `left`, `right`, or `none`
     # Currently Atom only seems to support left/right but not above/below,
     # at least in the `open` API, so that will suffice for now.
     # Also radio buttons don't seem to be supported yet so this is a string.
-    houseOfPane: 'right'
+    houseOfPane:
+      type: 'string'
+      default: 'right'
