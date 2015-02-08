@@ -23,8 +23,7 @@ describe "SpecMaker", ->
     )
 
   openFile = (file = 'lib/sample.js') ->
-    # Use sync to avoid having to wait for promises
-    atom.workspace.openSync(file)
+    atom.workspace.open(file)
 
   # Why can't I use `jasmine.any(Object)`?!?!?
   defaultOpts = ->
@@ -34,10 +33,11 @@ describe "SpecMaker", ->
   beforeEach ->
     waitsForPromise ->
       atom.packages.activatePackage('spec-maker')
-    runs ->
-      spyOn(atom.workspace, 'open')
-      jasmine.attachToDOM(workspaceView())
+    waitsForPromise ->
       openFile()
+    runs ->
+      jasmine.attachToDOM(workspaceView())
+      spyOn(atom.workspace, 'open').andCallThrough()
 
 
   describe 'creating and opening new specs', ->
@@ -53,13 +53,15 @@ describe "SpecMaker", ->
   describe 'returning from a spec to the source file', ->
 
     it 'returns to the source file for the spec', ->
-      openFile('spec/some-path/sample-spec.js')
-      atom.config.set('spec-maker.houseOfPane', 'none')
-      triggerOpenEvent()
-      expect(atom.workspace.open).toHaveBeenCalledWith(
-        'lib/some-path/sample.js',
-        undefined
-      )
+      waitsForPromise ->
+        openFile('spec/some-path/sample-spec.js')
+      runs ->
+        atom.config.set('spec-maker.houseOfPane', 'none')
+        triggerOpenEvent()
+        expect(atom.workspace.open).toHaveBeenCalledWith(
+          'lib/some-path/sample.js',
+          undefined
+        )
 
 
   describe 'user suffix and location settings', ->
@@ -81,13 +83,15 @@ describe "SpecMaker", ->
       )
 
     it 'uses user settings to place the spec file from source files', ->
-      atom.config.set('spec-maker.srcLocation', 'source/js')
-      openFile('source/js/some-path/sample.js')
-      triggerOpenEvent()
-      expect(atom.workspace.open).toHaveBeenCalledWith(
-        'spec/some-path/sample-spec.js',
-        defaultOpts()
-      )
+      waitsForPromise ->
+        openFile('source/js/some-path/sample.js')
+      runs ->
+        atom.config.set('spec-maker.srcLocation', 'source/js')
+        triggerOpenEvent()
+        expect(atom.workspace.open).toHaveBeenCalledWith(
+          'spec/some-path/sample-spec.js',
+          defaultOpts()
+        )
 
 
   describe 'user settings pane settings', ->
