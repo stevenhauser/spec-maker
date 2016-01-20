@@ -36,6 +36,9 @@ describe "SpecMaker", ->
     waitsForPromise ->
       openFile()
     runs ->
+      atom.config.set('spec-maker.specSuffix', '-spec')
+      atom.config.set('spec-maker.specLocation', '/spec')
+      atom.config.set('spec-maker.srcLocation', '/lib')
       jasmine.attachToDOM(workspaceView())
       spyOn(atom.workspace, 'open').andCallThrough()
 
