@@ -76,17 +76,17 @@ module.exports =
     # ie `my-app-file.js` -> `my-app-file-spec.js`
     specSuffix:
       type: 'string'
-      default: '-spec'
+      default: ''
     # Where the specs live
     # ie `lib/views/my-app-view.js` -> `spec/views/my-app-view-spec.js`
     specLocation:
       type: 'string'
-      default: 'spec/'
+      default: ''
     # Where the source code lives
     # ie `lib/my-app-file.js` or `src/my-app-file.js`
     srcLocation:
       type: 'string'
-      default: 'lib/'
+      default: ''
     # Which pane a spec is opened into.
     # ie `left`, `right`, or `none`
     # Currently Atom only seems to support left/right but not above/below,
